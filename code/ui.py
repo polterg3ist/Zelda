@@ -20,6 +20,12 @@ class UI:
             weapon = pygame.image.load(path).convert_alpha()
             self.weapon_graphics.append(weapon)
 
+        # convert magic dictionary
+        self.magic_graphics = []
+        for magic in magic_data.values():
+            path = magic['graphic']
+            magic = pygame.image.load(path).convert_alpha()
+            self.magic_graphics.append(magic)
 
     def show_bar(self, current, max_amount, bg_rect, color):
         # draw bg
@@ -55,10 +61,20 @@ class UI:
         return bg_rect
 
     def weapon_overlay(self, weapon_index, has_switched):
-        bg_rect = self.selection_box(10, 630, has_switched)
+        y_shift = -95
+        x_pos, y_pos = 10, HEIGHT + y_shift
+        bg_rect = self.selection_box(x_pos, y_pos, has_switched)
         weapon_surf = self.weapon_graphics[weapon_index]
         weapon_rect = weapon_surf.get_rect(center=bg_rect.center)
         self.display_surface.blit(weapon_surf, weapon_rect)
+
+    def magic_overlay(self, magic_index, has_switched):
+        y_shift = -90
+        x_pos, y_pos = 80, HEIGHT + y_shift
+        bg_rect = self.selection_box(x_pos, y_pos, has_switched)
+        magic_surf = self.magic_graphics[magic_index]
+        magic_rect = magic_surf.get_rect(center=bg_rect.center)
+        self.display_surface.blit(magic_surf, magic_rect)
 
     def display(self, player):
         self.show_bar(player.health, player.stats['health'], self.health_bar_rect, HEALTH_COLOR)
@@ -66,5 +82,5 @@ class UI:
 
         self.show_exp(player.exp)
 
-        self.weapon_overlay(player.weapon_index, player.can_switch_weapon)
-        self.selection_box(80, 630, player.switch_duration_cooldown)     # magic
+        self.weapon_overlay(player.weapon_index, player.can_switch_weapon)      # weapon
+        self.magic_overlay(player.magic_index, player.can_switch_magic)         # magic
