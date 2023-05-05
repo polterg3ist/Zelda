@@ -5,7 +5,7 @@ from entity import Entity
 
 
 class Player(Entity):
-    def __init__(self, pos, groups, obstacle_sprites, create_attack, destroy_attack, create_magic):
+    def __init__(self, pos, groups, obstacle_sprites, create_attack, destroy_attack, create_magic, volume_master):
         super().__init__(groups)
         self.image = pygame.image.load('../graphics/test/player.png').convert_alpha()
         self.rect = self.image.get_rect(topleft=pos)
@@ -53,8 +53,7 @@ class Player(Entity):
         self.invulnerability_duration = 500
 
         # import sound
-        self.weapon_attack_sound = pygame.mixer.Sound('../audio/sword.wav')
-        self.weapon_attack_sound.set_volume(0.2)
+        self.weapon_attack_sound = volume_master.game_sounds['sword']
 
     def import_player_assets(self):
         character_path = '../graphics/player/'
@@ -157,7 +156,8 @@ class Player(Entity):
                 self.destroy_attack()
 
         else:
-            if current_time - (self.attack_time + self.attack_cooldown) > self.post_attack_time:
+            #if current_time - (self.attack_time + self.attack_cooldown) > self.post_attack_time:
+            if current_time - self.attack_time >= self.attack_cooldown + weapon_data[self.weapon]['cooldown'] * 2:
                 self.ability_to_attack = True
 
         if not self.can_switch_weapon:

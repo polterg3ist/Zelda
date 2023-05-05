@@ -1,11 +1,13 @@
 import pygame
 from settings import *
-from sys import exit
+from sys import exit as close_game
 
 
 class Menu:
-    def __init__(self):
+    def __init__(self, player, volume_menu):
         # general setup
+        self.player = player
+        self.volume_menu = volume_menu
         self.display_surface = pygame.display.get_surface()
         self.is_active = False
         self.buttons = {
@@ -13,16 +15,21 @@ class Menu:
                 'text': 'Resume',
                 'func': self.resume},
 
+            'volume': {
+                'text': 'Game Volume',
+                'func': self.show_volume_menu
+            },
+
             'exit': {
                 'text': 'Exit the Game',
-                'func': self.exit_game}
+                'func': self.exit_game},
         }
         self.buttons_nr = len(self.buttons)
         self.font = pygame.font.Font(UI_FONT, UI_FONT_SIZE)
 
         # buttons creation
         self.width = WIDTH * 0.3
-        self.height = HEIGHT / self.buttons_nr + 1
+        self.height = HEIGHT / (self.buttons_nr + 3)
         self.create_buttons()
 
         # selection system
@@ -61,8 +68,7 @@ class Menu:
             left = WIDTH // 2 - self.width // 2
             # vertical position
             increment = HEIGHT // self.buttons_nr
-            top = (item * increment) + (increment - self.width) // 2
-
+            top = (item * increment) + (increment - self.height) // 2
             # create object
             button_text = self.get_item_by_index(index)['text']
             item = Item(left, top, self.width, self.height, index, self.font, button_text)
@@ -79,10 +85,19 @@ class Menu:
             item.display(self.selection_index)
 
     def resume(self):
+        # disable attack to not hit immediately after unpause
+        self.player.ability_to_attack = False
+        self.player.attack_time = pygame.time.get_ticks() - 300
+
         self.is_active = False
+        self.volume_menu.is_active = False
 
     def exit_game(self):
-        exit()
+        close_game()
+
+    def show_volume_menu(self):
+        self.volume_menu.is_active = True
+        self.is_active = False
 
 
 class Item:

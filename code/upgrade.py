@@ -107,7 +107,7 @@ class Item:
         # bar setup
         full_height = bottom[1] - top[1]
         relative_number = (value/max_value) * full_height
-        value_rect = pygame.Rect(top[0] - 15,bottom[1] - relative_number,  30, 10)
+        value_rect = pygame.Rect(top[0] - 15, bottom[1] - relative_number,  30, 10)
 
         # draw elements
         pygame.draw.line(surface, color, top, bottom, 5)

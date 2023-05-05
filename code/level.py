@@ -12,6 +12,8 @@ from particles import AnimationPlayer
 from magic import MagicPlayer
 from upgrade import Upgrade
 from menu import Menu
+from volume_master import VolumeMenu
+from volume_master import VolumeMaster
 
 
 class Level:
@@ -29,17 +31,21 @@ class Level:
         self.attack_sprites = pygame.sprite.Group()
         self.attackable_sprites = pygame.sprite.Group()
 
+        # sound
+        self.volume_master = VolumeMaster(self.visible_sprites)
+
         # sprite setup
         self.create_map()
 
         # user interface
         self.ui = UI()
         self.upgrade = Upgrade(self.player)
-        self.menu = Menu()
+        self.volume_menu = VolumeMenu(self.volume_master)
+        self.menu = Menu(self.player, self.volume_menu)
 
         # particles
         self.animation_player = AnimationPlayer()
-        self.magic_player = MagicPlayer(self.animation_player)
+        self.magic_player = MagicPlayer(self.animation_player, self.volume_master)
 
     def create_map(self):
         layouts = {
@@ -76,7 +82,8 @@ class Level:
                                     self.obstacle_sprites,
                                     self.create_attack,
                                     self.destroy_attack,
-                                    self.create_magic)
+                                    self.create_magic,
+                                    self.volume_master)
                             else:
                                 if col == '390':monster_name = 'bamboo'
                                 elif col == '391': monster_name = 'spirit'
@@ -88,7 +95,8 @@ class Level:
                                       self.obstacle_sprites,
                                       self.damage_player,
                                       self.trigger_death_particles,
-                                      self.add_exp)
+                                      self.add_exp,
+                                      self.volume_master)
 
     def create_attack(self):
         self.current_attack = Weapon(self.player, [self.visible_sprites, self.attack_sprites])
@@ -150,6 +158,9 @@ class Level:
         elif self.menu.is_active:
             # display game menu
             self.menu.display()
+        elif self.volume_menu.is_active:
+            # display volume menu
+            self.volume_menu.display()
         else:
             # run the game
             self.visible_sprites.update()

@@ -4,11 +4,11 @@ from random import randint
 
 
 class MagicPlayer:
-    def __init__(self, animation_player):
+    def __init__(self, animation_player, volume_master):
         self.animation_player = animation_player
         self.sounds = {
-            'heal': pygame.mixer.Sound(magic_data['heal']['attack_sound']),
-            'flame': pygame.mixer.Sound(magic_data['flame']['attack_sound'])
+            'heal': volume_master.game_sounds['heal'],
+            'flame': volume_master.game_sounds['flame'],
         }
 
     def heal(self, player, strength, cost, groups):
